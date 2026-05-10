@@ -1,0 +1,128 @@
+/* 全局样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ====== Markdown 渲染样式 ====== */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
+  margin-top: 24px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.markdown-body h2 {
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.markdown-body p {
+  margin-bottom: 12px;
+  line-height: 1.8;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 24px;
+  margin-bottom: 12px;
+}
+
+.markdown-body li {
+  margin-bottom: 4px;
+  line-height: 1.7;
+}
+
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid #e8e8e8;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.markdown-body th {
+  background: #fafafa;
+  font-weight: 600;
+}
+
+.markdown-body strong {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.markdown-body blockquote {
+  border-left: 3px solid #1677ff;
+  padding-left: 16px;
+  margin: 12px 0;
+  color: #555;
+  background: #f0f5ff;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+}
+
+/* ====== 响应式适配 ====== */
+@media (max-width: 768px) {
+  .markdown-body {
+    font-size: 14px;
+  }
+
+  .markdown-body table {
+    font-size: 12px;
+    display: block;
+    overflow-x: auto;
+  }
+
+  .markdown-body h1 { font-size: 22px; }
+  .markdown-body h2 { font-size: 19px; }
+  .markdown-body h3 { font-size: 16px; }
+
+  .ant-card {
+    border-radius: 8px;
+  }
+
+  .ant-statistic-content {
+    font-size: 20px !important;
+  }
+}
+
+/* ====== 滚动条 ====== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}
+
+/* ====== 打印样式（PDF导出时） ====== */
+@media print {
+  .ant-layout-header,
+  .ant-layout-sider,
+  .ant-btn {
+    display: none !important;
+  }
+}

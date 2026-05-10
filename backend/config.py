@@ -1,0 +1,13 @@
+import os
+
+SUPABASE_URL = os.getenv("SUPABASE_URL", "")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
+
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "")
+DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
+
+FREE_TIER_MONTHLY_LIMIT = 1000
+MIN_DAYS_FOR_AI_REPORT = 30
+
+AES_KEY = os.getenv("AES_KEY", "")
