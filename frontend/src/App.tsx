@@ -5,12 +5,14 @@ import AppLayout from './components/Layout/AppLayout';
 import AuthGuard from './components/AuthGuard';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import WelcomePage from './pages/WelcomePage';
 import DashboardPage from './pages/DashboardPage';
 import UploadPage from './pages/UploadPage';
 import CustomersPage from './pages/CustomersPage';
 import ReportPage from './pages/ReportPage';
 import AlertsPage from './pages/AlertsPage';
 import FeedbackPage from './pages/FeedbackPage';
+import ProfilePage from './pages/ProfilePage';
 
 export default function App() {
   return (
@@ -18,8 +20,9 @@ export default function App() {
       locale={zhCN}
       theme={{
         token: {
-          colorPrimary: '#1677ff',
-          borderRadius: 8,
+          colorPrimary: '#4f46e5',
+          borderRadius: 10,
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         },
       }}
     >
@@ -35,14 +38,16 @@ export default function App() {
                 </AuthGuard>
               }
             >
+              <Route index element={<WelcomePage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/upload" element={<UploadPage />} />
               <Route path="/customers" element={<CustomersPage />} />
               <Route path="/report" element={<ReportPage />} />
               <Route path="/alerts" element={<AlertsPage />} />
               <Route path="/feedback" element={<FeedbackPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </Route>
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </HashRouter>
       </AntApp>

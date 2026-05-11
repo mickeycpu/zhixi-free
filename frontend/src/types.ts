@@ -133,6 +133,14 @@ export interface UserInfo {
   phone: string;
 }
 
+export interface UserUsage {
+  monthly_used: number;
+  monthly_limit: number;
+  total_sales: number;
+  total_uploads: number;
+  total_reports: number;
+}
+
 // ====== 反馈 ======
 export interface FeedbackData {
   type: 'bug' | 'suggestion' | 'other';
