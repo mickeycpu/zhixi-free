@@ -44,8 +44,8 @@ export default function TrendChart({ dayData, weekData, monthData }: Props) {
           smooth: true,
           symbol: 'circle',
           symbolSize: 4,
-          itemStyle: { color: '#1677ff' },
-          areaStyle: { color: 'rgba(22, 119, 255, 0.08)' },
+          itemStyle: { color: '#4f46e5' },
+          areaStyle: { color: 'rgba(79, 70, 229, 0.1)' },
         },
         {
           name: '订单数',
@@ -55,7 +55,7 @@ export default function TrendChart({ dayData, weekData, monthData }: Props) {
           smooth: true,
           symbol: 'circle',
           symbolSize: 4,
-          itemStyle: { color: '#52c41a' },
+          itemStyle: { color: '#10b981' },
         },
       ],
     });

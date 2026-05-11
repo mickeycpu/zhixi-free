@@ -22,7 +22,7 @@ export default function TimeDistribution({ timeSlots, weekdays }: Props) {
         type: 'bar',
         data: timeSlots.map((d) => d.amount),
         itemStyle: {
-          color: '#1677ff',
+          color: '#4f46e5',
           borderRadius: [4, 4, 0, 0],
         },
       },

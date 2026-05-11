@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Typography, Skeleton } from 'antd';
+import { Typography, Skeleton, Empty } from 'antd';
 import SalesOverviewCards from '../components/SalesOverviewCards';
 import CategoryChart from '../components/CategoryChart';
 import ProductRanking from '../components/ProductRanking';
 import TrendChart from '../components/TrendChart';
 import TimeDistribution from '../components/TimeDistribution';
-import EmptyState from '../components/EmptyState';
 import {
   getOverview,
   getCategories,
@@ -39,14 +38,9 @@ export default function DashboardPage() {
     async function load() {
       setLoading(true);
       const [ov, cat, prod, trendDay, trendWeek, trendMonth, slots, wdays] = await Promise.all([
-        getOverview(),
-        getCategories(),
-        getProducts(),
-        getTrends('day'),
-        getTrends('week'),
-        getTrends('month'),
-        getTimeSlots(),
-        getWeekdays(),
+        getOverview(), getCategories(), getProducts(),
+        getTrends('day'), getTrends('week'), getTrends('month'),
+        getTimeSlots(), getWeekdays(),
       ]);
       if (cancelled) return;
       setOverview(ov.data);
@@ -76,25 +70,41 @@ export default function DashboardPage() {
 
   if (!overview) {
     return (
-      <EmptyState
-        type="no-data"
-        title="暂无销售数据"
-        description="上传您的销售数据后，这里将展示完整的经营分析看板"
+      <Empty
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description={
+          <div>
+            <Typography.Text strong>暂无销售数据</Typography.Text>
+            <br />
+            <Typography.Text type="secondary" style={{ fontSize: 13 }}>
+              上传销售数据后，这里将展示完整的经营分析
+            </Typography.Text>
+          </div>
+        }
       />
     );
   }
 
   return (
     <div>
-      <Typography.Title level={4} style={{ marginBottom: 16 }}>
-        销售分析看板
-      </Typography.Title>
-
+      {/* 概览区 */}
       <SalesOverviewCards data={overview} />
-      <CategoryChart data={categories} />
-      <ProductRanking data={products} />
+
+      {/* 趋势区 */}
+      <div className="section-label">销售趋势</div>
       <TrendChart dayData={dayTrends} weekData={weekTrends} monthData={monthTrends} />
-      <TimeDistribution timeSlots={timeSlots} weekdays={weekdays} />
+
+      {/* 中区：品类 + 商品 */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 24 }}>
+        <CategoryChart data={categories} />
+        <ProductRanking data={products} />
+      </div>
+
+      {/* 时段区 */}
+      <div style={{ marginTop: 24 }}>
+        <div className="section-label">时段分布</div>
+        <TimeDistribution timeSlots={timeSlots} weekdays={weekdays} />
+      </div>
     </div>
   );
 }

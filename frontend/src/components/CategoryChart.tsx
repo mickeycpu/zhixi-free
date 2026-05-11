@@ -19,7 +19,7 @@ export default function CategoryChart({ data }: { data: CategoryRanking[] }) {
         type: 'bar',
         data: data.map((d) => d.amount),
         itemStyle: {
-          color: '#1677ff',
+          color: '#4f46e5',
           borderRadius: [4, 4, 0, 0],
         },
       },

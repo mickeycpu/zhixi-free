@@ -28,7 +28,6 @@ interface Props {
 export default function Sidebar({ collapsed, onCollapse }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
-
   const selectedKey = '/' + (location.pathname.split('/')[1] || 'dashboard');
 
   return (
@@ -37,10 +36,12 @@ export default function Sidebar({ collapsed, onCollapse }: Props) {
       collapsed={collapsed}
       onCollapse={onCollapse}
       breakpoint="lg"
+      width={220}
       style={{
-        background: '#fff',
-        borderRight: '1px solid #f0f0f0',
+        background: 'var(--color-sidebar)',
+        borderRight: 'none',
       }}
+      trigger={null}
     >
       <div
         style={{
@@ -48,22 +49,40 @@ export default function Sidebar({ collapsed, onCollapse }: Props) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontWeight: 700,
-          fontSize: collapsed ? 16 : 20,
-          color: '#1677ff',
-          borderBottom: '1px solid #f0f0f0',
+          fontWeight: 800,
+          fontSize: collapsed ? 18 : 22,
+          color: '#fff',
+          letterSpacing: 1,
+          background: 'linear-gradient(135deg, rgba(79,70,229,0.3) 0%, rgba(124,58,237,0.15) 100%)',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
+          userSelect: 'none',
         }}
       >
-        {collapsed ? '智析' : '智析免费版'}
+        {collapsed ? (
+          <span style={{ background: 'linear-gradient(135deg, #a78bfa, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            智析
+          </span>
+        ) : (
+          <span style={{ background: 'linear-gradient(135deg, #c4b5fd, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            智析免费版
+          </span>
+        )}
       </div>
+
       <Menu
         mode="inline"
         selectedKeys={[selectedKey]}
         items={menuItems}
         onClick={({ key }) => navigate(key)}
-        style={{ borderRight: 0, marginTop: 8 }}
+        style={{
+          borderRight: 0,
+          marginTop: 8,
+          background: 'transparent',
+          color: 'var(--color-sidebar-text)',
+        }}
+        theme="dark"
       />
     </Sider>
   );
