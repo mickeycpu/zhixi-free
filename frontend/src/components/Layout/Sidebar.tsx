@@ -30,7 +30,7 @@ export default function Sidebar({ collapsed, onCollapse }: { collapsed: boolean;
   }, [location.pathname]);
 
   const menuItems = [
-    { key: '/', icon: <HomeOutlined />, label: '首页' },
+    { key: '/home', icon: <HomeOutlined />, label: '首页' },
     { key: '/dashboard', icon: <DashboardOutlined />, label: '销售看板' },
     { key: '/upload', icon: <UploadOutlined />, label: '数据上传' },
     { key: '/customers', icon: <UserOutlined />, label: '客户分析' },

@@ -72,16 +72,15 @@ export default function WelcomePage() {
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
           <Button
-            type="primary"
             size="large"
             icon={<UploadOutlined />}
             onClick={() => navigate('/upload')}
             style={{
-              background: 'rgba(255,255,255,0.2)',
-              border: '1px solid rgba(255,255,255,0.3)',
-              color: '#fff',
+              background: '#fff',
+              border: 'none',
+              color: '#4f46e5',
               fontWeight: 600,
-              backdropFilter: 'blur(4px)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             }}
           >
             上传数据
@@ -91,9 +90,11 @@ export default function WelcomePage() {
             icon={<FileTextOutlined />}
             onClick={() => navigate('/report')}
             style={{
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              color: '#fff',
+              background: '#fff',
+              border: 'none',
+              color: '#4f46e5',
+              fontWeight: 600,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             }}
           >
             查看报告

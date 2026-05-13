@@ -3,6 +3,7 @@ import { ConfigProvider, App as AntApp } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import AppLayout from './components/Layout/AppLayout';
 import AuthGuard from './components/AuthGuard';
+import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import WelcomePage from './pages/WelcomePage';
@@ -29,8 +30,12 @@ export default function App() {
       <AntApp>
         <HashRouter>
           <Routes>
+            {/* 公开页面 */}
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+
+            {/* 需要登录的页面 */}
             <Route
               element={
                 <AuthGuard>
@@ -38,7 +43,7 @@ export default function App() {
                 </AuthGuard>
               }
             >
-              <Route index element={<WelcomePage />} />
+              <Route path="/home" element={<WelcomePage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/upload" element={<UploadPage />} />
               <Route path="/customers" element={<CustomersPage />} />
@@ -47,6 +52,7 @@ export default function App() {
               <Route path="/feedback" element={<FeedbackPage />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Route>
+
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </HashRouter>

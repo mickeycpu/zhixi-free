@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Card, Form, Input, Button, message, Typography, Space, Alert } from 'antd';
-import { MailOutlined, LockOutlined } from '@ant-design/icons';
+import { Card, Form, Input, Button, message, Typography, Space } from 'antd';
+import { MailOutlined, LockOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { loginWithPassword } from '../api/auth';
 import { useAuthStore } from '../stores/authStore';
 
@@ -16,7 +16,7 @@ export default function LoginPage() {
       const { token, user } = await loginWithPassword(values.email, values.password);
       setAuth(token, user);
       message.success('登录成功');
-      navigate('/dashboard', { replace: true });
+      navigate('/home', { replace: true });
     } catch (err: any) {
       message.error(err.message || '登录失败，请检查邮箱和密码');
     } finally {
@@ -31,30 +31,32 @@ export default function LoginPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #1677ff 0%, #69b1ff 100%)',
+        background: 'linear-gradient(165deg, #f8f7f4 0%, #eef2ff 40%, #ede9fe 100%)',
         padding: 16,
       }}
     >
       <Card
-        style={{ width: 400, maxWidth: '100%', borderRadius: 12 }}
-        styles={{ body: { padding: 32 } }}
+        style={{ width: 400, maxWidth: '100%', borderRadius: 16, boxShadow: '0 8px 32px rgba(0,0,0,0.06)' }}
+        styles={{ body: { padding: 36 } }}
       >
-        <Typography.Title level={3} style={{ textAlign: 'center', marginBottom: 8 }}>
-          智析免费版
+        <Button
+          type="text"
+          icon={<ArrowLeftOutlined />}
+          onClick={() => navigate('/')}
+          style={{ marginBottom: 16, padding: 0, color: '#6b7280' }}
+        >
+          返回首页
+        </Button>
+
+        <Typography.Title level={3} style={{ textAlign: 'center', marginBottom: 4, fontWeight: 700 }}>
+          登录智析
         </Typography.Title>
         <Typography.Text
           type="secondary"
-          style={{ display: 'block', textAlign: 'center', marginBottom: 24 }}
+          style={{ display: 'block', textAlign: 'center', marginBottom: 28 }}
         >
-          AI驱动的经营分析平台
+          欢迎回来，继续分析你的经营数据
         </Typography.Text>
-
-        <Alert
-          type="info"
-          message="测试账号：test@zhixi.dev / test123456"
-          style={{ marginBottom: 16 }}
-          showIcon
-        />
 
         <Form onFinish={handleSubmit} size="large" autoComplete="off">
           <Form.Item
@@ -74,8 +76,8 @@ export default function LoginPage() {
             <Input.Password prefix={<LockOutlined />} placeholder="请输入密码" />
           </Form.Item>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={loading} block>
+          <Form.Item style={{ marginBottom: 12 }}>
+            <Button type="primary" htmlType="submit" loading={loading} block style={{ height: 44, fontWeight: 600 }}>
               登录
             </Button>
           </Form.Item>
