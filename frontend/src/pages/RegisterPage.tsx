@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Card, Form, Input, Button, message, Typography, Space } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import { registerWithPassword } from '../api/auth';
+import { registerWithPassword, confirmEmail } from '../api/auth';
 import { useAuthStore } from '../stores/authStore';
 
 export default function RegisterPage() {
@@ -18,9 +18,20 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       const { token, user } = await registerWithPassword(values.email, values.password);
-      setAuth(token, user);
-      message.success('注册成功，欢迎加入智析！');
-      navigate('/dashboard', { replace: true });
+
+      // 自动确认邮箱，解决国内用户收不到确认邮件的问题
+      if (user?.user_id) {
+        await confirmEmail(user.user_id);
+      }
+
+      if (token) {
+        setAuth(token, user);
+        message.success('注册成功，欢迎加入智析！');
+        navigate('/home', { replace: true });
+      } else {
+        message.success('注册成功！请登录');
+        navigate('/login', { replace: true });
+      }
     } catch (err: any) {
       message.error(err.message || '注册失败，请重试');
     } finally {

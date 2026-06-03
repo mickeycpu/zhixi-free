@@ -1,8 +1,9 @@
 from datetime import datetime
+import httpx
 from fastapi import APIRouter, Request
 
 from database.client import supabase
-from config import FREE_TIER_MONTHLY_LIMIT
+from config import FREE_TIER_MONTHLY_LIMIT, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 
 router = APIRouter(prefix="/api/auth", tags=["认证"])
 
@@ -59,3 +60,26 @@ def user_usage(request: Request):
         },
         "message": "ok",
     }
+
+
+@router.post("/confirm-email")
+async def confirm_email(request: Request):
+    """注册后自动确认邮箱，解决国内用户收不到Supabase确认邮件的问题"""
+    body = await request.json()
+    user_id = body.get("user_id")
+    if not user_id:
+        return {"code": 400, "data": None, "message": "缺少 user_id"}
+
+    async with httpx.AsyncClient(timeout=15) as client:
+        resp = await client.put(
+            f"{SUPABASE_URL}/auth/v1/admin/users/{user_id}",
+            headers={
+                "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
+                "apikey": SUPABASE_SERVICE_ROLE_KEY,
+                "Content-Type": "application/json",
+            },
+            json={"email_confirm": True},
+        )
+        if resp.status_code == 200:
+            return {"code": 0, "data": None, "message": "邮箱已确认"}
+        return {"code": 500, "data": None, "message": f"确认失败: {resp.text[:200]}"}

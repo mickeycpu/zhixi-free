@@ -2,11 +2,25 @@ import axios from 'axios';
 
 const client = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-  timeout: 30000,
+  timeout: 60000,
 });
 
-// 请求拦截：注入 token
-client.interceptors.request.use((config) => {
+// 后端唤醒标记
+let warmUpDone = false;
+
+client.interceptors.request.use(async (config) => {
+  if (!warmUpDone) {
+    warmUpDone = true;
+    try {
+      await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL || '/api'}/api/health`,
+        { timeout: 90000 }
+      );
+    } catch {
+      // 唤醒失败不阻塞，继续发请求
+    }
+  }
+
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -14,15 +28,13 @@ client.interceptors.request.use((config) => {
   return config;
 });
 
-// 响应拦截：统一错误处理
 client.interceptors.response.use(
   (resp) => resp,
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      // 避免在登录页重复触发
-      if (!window.location.pathname.startsWith('/login')) {
-        window.location.href = '/login';
+      if (!window.location.hash.includes('/login')) {
+        window.location.hash = '#/login';
       }
     }
     return Promise.reject(error);

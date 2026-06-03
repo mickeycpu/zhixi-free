@@ -29,10 +29,16 @@ export default function WelcomePage() {
 
   useEffect(() => {
     async function load() {
-      const [ov, al] = await Promise.all([getOverview(), getAlerts()]);
-      setOverview(ov.code === 0 ? ov.data : null);
-      setAlerts(al.code === 0 ? al.data.slice(0, 3) : []);
-      setLoading(false);
+      try {
+        const [ov, al] = await Promise.all([getOverview(), getAlerts()]);
+        setOverview(ov.code === 0 ? ov.data : null);
+        setAlerts(al.code === 0 ? al.data.slice(0, 3) : []);
+      } catch {
+        setOverview(null);
+        setAlerts([]);
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, []);

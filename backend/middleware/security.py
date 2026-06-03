@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from database.client import supabase
 
-PUBLIC_PATHS = {"/api/health", "/docs", "/openapi.json", "/redoc"}
+PUBLIC_PATHS = {"/api/health", "/docs", "/openapi.json", "/redoc", "/api/auth/confirm-email"}
 
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):

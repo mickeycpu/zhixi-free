@@ -1,0 +1,84 @@
+# 智析免费版 — 项目技术报告
+
+## 一句话概述
+
+智析免费版是一个完整的 AI 经营分析 SaaS 产品。用户上传销售数据（Excel/CSV），系统自动清洗、计算、生成可视化看板和 AI 经营报告。
+
+---
+
+## 技术架构
+
+| 层级 | 技术 | 部署 |
+|---|---|---|
+| 前端 | React 19 + TypeScript + Ant Design + ECharts + Vite | GitHub Pages |
+| 后端 | Python FastAPI + pandas + httpx | Render (Docker) |
+| 数据库 | Supabase (PostgreSQL) + RLS 数据隔离 | Supabase 云 |
+| AI | DeepSeek API (deepseek-chat) | - |
+| 认证 | Supabase Auth (邮箱密码 + JWT) | - |
+
+---
+
+## 我负责的部分（后端 + 部署）
+
+### 数据库设计
+
+4 张核心表：`uploads`（上传记录）、`sales_data`（销售数据）、`reports`（AI 报告）、`alerts`（预警）。全部启用 Row Level Security，`USING (auth.uid() = user_id)` 实现用户数据严格隔离。sales_data 表中客户标识用 SHA256 hash 脱敏存储。
+
+### 数据处理引擎（pandas）
+
+自动识别列名（金额/销售金额/amt/amount 等 50+ 种写法），清洗空值、去重、统一日期格式、过滤异常值（>99 分位数剔除）。计算 GMV、客单价、环比同比、品类排名、时段分布、新老客户识别、留存率、流失预警。
+
+### AI 报告（DeepSeek）
+
+三段式 Prompt 模板：发生了什么 → 为什么 → 怎么办。调用前做数据脱敏——传给 AI 的只有聚合统计数字，不传任何客户隐私字段。输出结构化 JSON + Markdown。
+
+### API 设计
+
+17 个 RESTful 接口，统一响应格式 `{"code":0,"data":...,"message":"ok"}`。FastAPI 自动生成 OpenAPI 文档。中间件层做 JWT 认证 + CORS 处理。
+
+### 部署
+
+前后端分离部署，总成本 0 元：
+- 后端 Render (Dockerfile + render.yaml)，免费 512MB/0.1CPU
+- 前端 GitHub Pages（gh-pages 分支），免费无限带宽
+- Supabase 免费层 500MB 数据库
+
+---
+
+## 关键技术挑战与解决
+
+### 1. CORS 预检请求 401
+
+**问题**：Starlette 的 BaseHTTPMiddleware 不兼容 FastAPI 的 HTTPException，OPTIONS 预检被 AuthMiddleware 拦截返回 500。
+
+**解决**：在 AuthMiddleware.dispatch() 顶部增加 `if request.method == "OPTIONS": return await call_next(request)`，同时将 `raise HTTPException` 改为 `return JSONResponse`（Starlette 中间件无法 catch FastAPI 异常）。
+
+### 2. Render 免费层冷启动
+
+**问题**：15 分钟无请求后休眠，唤醒需 30-60 秒，前端 axios 30s 超时直接截断。
+
+**解决**：前端 axios timeout 延长至 60s，首次请求前先发 health check 预唤醒；设置 cron 每 5 分钟 ping 一次保活。
+
+### 3. supabase-py v2 `.not_.is_()` 不兼容
+
+**问题**：`.not_.is_("column", "null")` 语法在 supabase-py 2.x 中导致 500。
+
+**解决**：移除 SQL 层 null 过滤，改为 Python 层 `if not value: continue` 处理。
+
+### 4. 新用户邮箱未确认无法登录
+
+**问题**：Supabase 默认要求邮箱确认，国内邮箱收不到确认邮件。
+
+**解决**：Admin API 批量确认 + 关闭邮箱确认开关。
+
+---
+
+## 项目成果
+
+| 指标 | 数据 |
+|---|---|
+| 后端接口 | 17 个 RESTful API |
+| 前端页面 | 落地页/登录/注册/首页/看板/上传/客户/报告/预警/反馈/个人中心 |
+| 代码量 | 前端 ~80 文件，后端 ~17 文件 |
+| 月成本 | 0 元（全部免费层） |
+| 线上地址 | https://mickeycpu.github.io/zhixi-free/ |

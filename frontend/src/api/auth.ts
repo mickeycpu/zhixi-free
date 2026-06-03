@@ -65,3 +65,19 @@ export async function getMe(): Promise<ApiResponse<UserInfo>> {
   const resp = await client.get('/api/auth/me');
   return resp.data;
 }
+
+export async function confirmEmail(userId: string): Promise<boolean> {
+  try {
+    const resp = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL || '/api'}/api/auth/confirm-email`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId }),
+      }
+    );
+    return resp.ok;
+  } catch {
+    return false;
+  }
+}
