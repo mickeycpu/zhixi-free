@@ -32,6 +32,7 @@ export async function loginWithPassword(
     user: {
       user_id: data.user?.id || '',
       phone: data.user?.phone || email,
+      email: data.user?.email || email,
     },
   };
 }
@@ -57,6 +58,7 @@ export async function registerWithPassword(
     user: {
       user_id: data.user?.id || '',
       phone: data.user?.phone || email,
+      email: data.user?.email || email,
     },
   };
 }

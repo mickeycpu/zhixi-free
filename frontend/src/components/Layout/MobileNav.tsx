@@ -5,7 +5,10 @@ import {
   UserOutlined,
   FileTextOutlined,
   AlertOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons';
+import { useAuthStore } from '../../stores/authStore';
+import { isAdminUser } from '../../utils/admin';
 
 const tabs = [
   { key: '/dashboard', icon: <DashboardOutlined />, label: '看板' },
@@ -18,7 +21,11 @@ const tabs = [
 export default function MobileNav() {
   const navigate = useNavigate();
   const location = useLocation();
+  const user = useAuthStore((s) => s.user);
   const current = '/' + (location.pathname.split('/')[1] || 'dashboard');
+  const visibleTabs = isAdminUser(user)
+    ? [...tabs, { key: '/admin', icon: <SafetyCertificateOutlined />, label: '管理' }]
+    : tabs;
 
   return (
     <nav
@@ -36,7 +43,7 @@ export default function MobileNav() {
         paddingBottom: 'env(safe-area-inset-bottom, 6px)',
       }}
     >
-      {tabs.map((t) => {
+      {visibleTabs.map((t) => {
         const active = current === t.key;
         return (
           <div

@@ -28,12 +28,19 @@ async def generate_report(stats: dict) -> dict:
         data = resp.json()
 
     markdown = data["choices"][0]["message"]["content"]
+    usage = data.get("usage") or {}
 
     structured = _parse_structured(markdown)
 
     return {
         "markdown": markdown,
         "structured": structured,
+        "usage": {
+            "prompt_tokens": usage.get("prompt_tokens", 0),
+            "completion_tokens": usage.get("completion_tokens", 0),
+            "total_tokens": usage.get("total_tokens", 0),
+            "model": data.get("model", "deepseek-chat"),
+        },
     }
 
 def _parse_structured(markdown: str) -> dict:

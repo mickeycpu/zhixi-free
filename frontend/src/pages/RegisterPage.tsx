@@ -2,8 +2,13 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Card, Form, Input, Button, message, Typography, Space } from 'antd';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import { registerWithPassword, confirmEmail } from '../api/auth';
+import { registerWithPassword, confirmEmail, getMe } from '../api/auth';
 import { useAuthStore } from '../stores/authStore';
+import { isAdminUser, withAdminFallback } from '../utils/admin';
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : '注册失败，请重试';
+}
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
@@ -25,15 +30,21 @@ export default function RegisterPage() {
       }
 
       if (token) {
-        setAuth(token, user);
+        localStorage.setItem('token', token);
+        const me = await getMe();
+        const authedUser = withAdminFallback(
+          me.code === 0 ? { ...user, ...me.data, email: me.data.email || user.email } : user,
+          values.email,
+        );
+        setAuth(token, authedUser);
         message.success('注册成功，欢迎加入智析！');
-        navigate('/home', { replace: true });
+        navigate(isAdminUser(authedUser) ? '/admin' : '/home', { replace: true });
       } else {
         message.success('注册成功！请登录');
         navigate('/login', { replace: true });
       }
-    } catch (err: any) {
-      message.error(err.message || '注册失败，请重试');
+    } catch (err) {
+      message.error(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

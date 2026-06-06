@@ -14,6 +14,7 @@ import ReportPage from './pages/ReportPage';
 import AlertsPage from './pages/AlertsPage';
 import FeedbackPage from './pages/FeedbackPage';
 import ProfilePage from './pages/ProfilePage';
+import AdminPage from './pages/AdminPage';
 
 export default function App() {
   return (
@@ -51,6 +52,16 @@ export default function App() {
               <Route path="/alerts" element={<AlertsPage />} />
               <Route path="/feedback" element={<FeedbackPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+            </Route>
+
+            <Route
+              element={
+                <AuthGuard requireAdmin>
+                  <AppLayout />
+                </AuthGuard>
+              }
+            >
+              <Route path="/admin" element={<AdminPage />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

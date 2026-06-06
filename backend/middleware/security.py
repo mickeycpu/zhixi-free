@@ -2,6 +2,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from database.client import supabase
+from auth.permissions import ensure_profile, fallback_profile
 
 PUBLIC_PATHS = {"/api/health", "/docs", "/openapi.json", "/redoc", "/api/auth/confirm-email"}
 
@@ -19,9 +20,31 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         token = auth_header[7:]
         try:
-            user = supabase.auth.get_user(token)
-            request.state.user_id = user.user.id
-            request.state.user_phone = user.user.phone
+            auth_user = supabase.auth.get_user(token).user
+        except Exception:
+            return JSONResponse(status_code=401, content={"code": 401, "data": None, "message": "Invalid token"})
+
+        try:
+            profile = ensure_profile(auth_user)
+        except Exception:
+            profile = fallback_profile(auth_user)
+
+        try:
+            if profile.get("is_banned"):
+                return JSONResponse(
+                    status_code=403,
+                    content={
+                        "code": 403,
+                        "data": None,
+                        "message": profile.get("ban_reason") or "账号已被封禁",
+                    },
+                )
+
+            request.state.user_id = auth_user.id
+            request.state.user_email = auth_user.email
+            request.state.user_phone = auth_user.phone
+            request.state.user_role = profile.get("role", "user")
+            request.state.user_profile = profile
         except Exception:
             return JSONResponse(status_code=401, content={"code": 401, "data": None, "message": "Invalid token"})
 

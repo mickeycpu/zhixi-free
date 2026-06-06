@@ -8,6 +8,7 @@ import {
   RightOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '../stores/authStore';
+import { isAdminUser } from '../utils/admin';
 
 const features = [
   {
@@ -33,10 +34,11 @@ const features = [
 export default function LandingPage() {
   const navigate = useNavigate();
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+  const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
-    if (isLoggedIn) navigate('/home', { replace: true });
-  }, []);
+    if (isLoggedIn) navigate(isAdminUser(user) ? '/admin' : '/home', { replace: true });
+  }, [isLoggedIn, navigate, user]);
 
   return (
     <div

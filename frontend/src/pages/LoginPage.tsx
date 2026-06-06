@@ -2,8 +2,13 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Card, Form, Input, Button, message, Typography, Space } from 'antd';
 import { MailOutlined, LockOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import { loginWithPassword } from '../api/auth';
+import { getMe, loginWithPassword } from '../api/auth';
 import { useAuthStore } from '../stores/authStore';
+import { isAdminUser, withAdminFallback } from '../utils/admin';
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : '登录失败，请检查邮箱和密码';
+}
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -14,11 +19,17 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const { token, user } = await loginWithPassword(values.email, values.password);
-      setAuth(token, user);
+      localStorage.setItem('token', token);
+      const me = await getMe();
+      const authedUser = withAdminFallback(
+        me.code === 0 ? { ...user, ...me.data, email: me.data.email || user.email } : user,
+        values.email,
+      );
+      setAuth(token, authedUser);
       message.success('登录成功');
-      navigate('/home', { replace: true });
-    } catch (err: any) {
-      message.error(err.message || '登录失败，请检查邮箱和密码');
+      navigate(isAdminUser(authedUser) ? '/admin' : '/home', { replace: true });
+    } catch (err) {
+      message.error(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

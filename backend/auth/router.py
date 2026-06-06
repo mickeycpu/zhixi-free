@@ -13,7 +13,10 @@ def me(request: Request):
         "code": 0,
         "data": {
             "user_id": request.state.user_id,
+            "email": request.state.user_email,
             "phone": request.state.user_phone,
+            "role": request.state.user_role,
+            "is_banned": request.state.user_profile.get("is_banned", False),
         },
         "message": "ok",
     }

@@ -10,21 +10,27 @@ import {
   MessageOutlined,
   HomeOutlined,
   SettingOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import { getAlerts } from '../../api/alerts';
+import { useAuthStore } from '../../stores/authStore';
+import type { AlertItem } from '../../types';
+import { isAdminUser } from '../../utils/admin';
 
 const { Sider } = Layout;
 
 export default function Sidebar({ collapsed, onCollapse }: { collapsed: boolean; onCollapse: (v: boolean) => void }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const user = useAuthStore((s) => s.user);
   const [unread, setUnread] = useState(0);
   const selectedKey = '/' + (location.pathname.split('/')[1] || '');
+  const isAdmin = isAdminUser(user);
 
   useEffect(() => {
     getAlerts().then((res) => {
       if (res.code === 0) {
-        setUnread(res.data.filter((a: any) => !a.is_read).length);
+        setUnread(res.data.filter((alert: AlertItem) => !alert.is_read).length);
       }
     });
   }, [location.pathname]);
@@ -55,6 +61,10 @@ export default function Sidebar({ collapsed, onCollapse }: { collapsed: boolean;
     { key: '/feedback', icon: <MessageOutlined />, label: '意见反馈' },
     { key: '/profile', icon: <SettingOutlined />, label: '个人中心' },
   ];
+
+  if (isAdmin) {
+    menuItems.push({ key: '/admin', icon: <SafetyCertificateOutlined />, label: '管理员系统' });
+  }
 
   return (
     <Sider

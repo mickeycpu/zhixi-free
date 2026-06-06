@@ -11,6 +11,7 @@ import MobileNav from './MobileNav';
 import { useResponsive } from '../../hooks/useResponsive';
 import { useAppStore } from '../../stores/appStore';
 import { useAuthStore } from '../../stores/authStore';
+import AdminRedirect from '../AdminRedirect';
 
 const { Header, Content } = Layout;
 
@@ -22,6 +23,7 @@ export default function AppLayout() {
 
   return (
     <Layout style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
+      <AdminRedirect />
       {!isMobile && (
         <Sidebar collapsed={sidebarCollapsed} onCollapse={toggleSidebar} />
       )}

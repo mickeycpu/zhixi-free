@@ -88,6 +88,19 @@ async def generate(request: Request):
     }).execute()
 
     report_id = resp.data[0]["id"]
+    usage = report.get("usage", {})
+    try:
+        supabase.table("ai_token_usage").insert({
+            "user_id": user_id,
+            "report_id": report_id,
+            "provider": "deepseek",
+            "model": usage.get("model", "deepseek-chat"),
+            "prompt_tokens": usage.get("prompt_tokens", 0),
+            "completion_tokens": usage.get("completion_tokens", 0),
+            "total_tokens": usage.get("total_tokens", 0),
+        }).execute()
+    except Exception:
+        pass
 
     return {
         "code": 0,

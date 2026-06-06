@@ -131,6 +131,9 @@ export interface AlertItem {
 export interface UserInfo {
   user_id: string;
   phone: string;
+  email?: string;
+  role?: 'user' | 'admin' | 'super_admin';
+  is_banned?: boolean;
 }
 
 export interface UserUsage {
@@ -146,4 +149,30 @@ export interface FeedbackData {
   type: 'bug' | 'suggestion' | 'other';
   content: string;
   contact?: string;
+}
+
+// ====== 管理员 ======
+export interface AdminOverview {
+  account_count: number;
+  upload_count: number;
+  sales_count: number;
+  report_count: number;
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+}
+
+export interface AdminUser {
+  user_id: string;
+  email: string | null;
+  phone: string | null;
+  role: 'user' | 'admin' | 'super_admin';
+  is_banned: boolean;
+  ban_reason: string | null;
+  created_at: string;
+  updated_at: string;
+  total_uploads: number;
+  total_reports: number;
+  total_sales: number;
+  total_tokens: number;
 }

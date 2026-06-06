@@ -12,6 +12,7 @@ from upload.router import router as upload_router
 from analytics.router import router as analytics_router
 from ai.router import router as ai_router
 from alert.router import router as alert_router
+from admin.router import router as admin_router
 
 app = FastAPI(
     title="智析免费版 API",
@@ -33,6 +34,7 @@ app.include_router(upload_router)
 app.include_router(analytics_router)
 app.include_router(ai_router)
 app.include_router(alert_router)
+app.include_router(admin_router)
 
 
 @app.get("/api/health")
