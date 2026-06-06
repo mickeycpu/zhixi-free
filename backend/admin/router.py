@@ -118,6 +118,44 @@ async def _migrate_via_api():
     return {"code": 0, "data": {"checks": results}, "message": "表检查完成。如都是200则表已存在，否则需要在Supabase SQL Editor中执行schema.sql"}
 
 
+@router.post("/reset-admin-password")
+async def reset_admin_password():
+    """重置超级管理员密码为 test123456"""
+    import httpx
+    async with httpx.AsyncClient(timeout=15) as client:
+        # 1. 通过邮箱查用户ID
+        list_resp = await client.get(
+            f"https://ihqhfxbqdbwsxzxylnpb.supabase.co/auth/v1/admin/users",
+            headers={
+                "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
+                "apikey": SUPABASE_SERVICE_ROLE_KEY,
+            },
+        )
+        users = list_resp.json().get("users", [])
+        admin_id = None
+        for u in users:
+            if u.get("email", "").lower() == "15871427062@163.com":
+                admin_id = u["id"]
+                break
+
+        if not admin_id:
+            return {"code": 404, "data": None, "message": "找不到管理员账号"}
+
+        # 2. 重置密码
+        put_resp = await client.put(
+            f"https://ihqhfxbqdbwsxzxylnpb.supabase.co/auth/v1/admin/users/{admin_id}",
+            headers={
+                "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
+                "apikey": SUPABASE_SERVICE_ROLE_KEY,
+                "Content-Type": "application/json",
+            },
+            json={"password": "test123456", "email_confirm": True},
+        )
+        if put_resp.status_code == 200:
+            return {"code": 0, "data": None, "message": "密码已重置为 test123456，现在可以登录了"}
+        return {"code": 500, "data": None, "message": f"重置失败: {put_resp.text[:200]}"}
+
+
 class RoleUpdate(BaseModel):
     role: str
 
