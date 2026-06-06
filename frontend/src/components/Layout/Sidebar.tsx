@@ -35,7 +35,7 @@ export default function Sidebar({ collapsed, onCollapse }: { collapsed: boolean;
     });
   }, [location.pathname]);
 
-  const menuItems = [
+  const userMenuItems = [
     { key: '/home', icon: <HomeOutlined />, label: '首页' },
     { key: '/dashboard', icon: <DashboardOutlined />, label: '销售看板' },
     { key: '/upload', icon: <UploadOutlined />, label: '数据上传' },
@@ -48,12 +48,7 @@ export default function Sidebar({ collapsed, onCollapse }: { collapsed: boolean;
         <span>
           预警中心
           {unread > 0 && (
-            <Badge
-              count={unread}
-              size="small"
-              offset={[6, -2]}
-              style={{ boxShadow: 'none' }}
-            />
+            <Badge count={unread} size="small" offset={[6, -2]} style={{ boxShadow: 'none' }} />
           )}
         </span>
       ),
@@ -62,9 +57,12 @@ export default function Sidebar({ collapsed, onCollapse }: { collapsed: boolean;
     { key: '/profile', icon: <SettingOutlined />, label: '个人中心' },
   ];
 
-  if (isAdmin) {
-    menuItems.push({ key: '/admin', icon: <SafetyCertificateOutlined />, label: '管理员系统' });
-  }
+  const adminMenuItems = [
+    { key: '/admin', icon: <SafetyCertificateOutlined />, label: '管理员概览' },
+    { key: '/home', icon: <HomeOutlined />, label: '切换到用户系统' },
+  ];
+
+  const menuItems = isAdmin ? adminMenuItems : userMenuItems;
 
   return (
     <Sider
@@ -73,10 +71,7 @@ export default function Sidebar({ collapsed, onCollapse }: { collapsed: boolean;
       onCollapse={onCollapse}
       breakpoint="lg"
       width={220}
-      style={{
-        background: 'var(--color-sidebar)',
-        borderRight: 'none',
-      }}
+      style={{ background: 'var(--color-sidebar)', borderRight: 'none' }}
       trigger={null}
     >
       <div
@@ -97,9 +92,9 @@ export default function Sidebar({ collapsed, onCollapse }: { collapsed: boolean;
           padding: '0 8px',
           cursor: 'pointer',
         }}
-        onClick={() => navigate('/')}
+        onClick={() => navigate(isAdmin ? '/admin' : '/home')}
       >
-        {collapsed ? '智析' : '智析免费版'}
+        {collapsed ? '智析' : isAdmin ? '智析 · 管理后台' : '智析免费版'}
       </div>
       <Menu
         mode="inline"

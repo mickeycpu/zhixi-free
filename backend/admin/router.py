@@ -118,6 +118,76 @@ async def _migrate_via_api():
     return {"code": 0, "data": {"checks": results}, "message": "表检查完成。如都是200则表已存在，否则需要在Supabase SQL Editor中执行schema.sql"}
 
 
+@router.post("/generate-test-data")
+async def generate_test_data():
+    """为超级管理员生成500条测试销售数据"""
+    import datetime as dt
+    import random
+    import httpx
+
+    # 找到管理员
+    async with httpx.AsyncClient(timeout=15) as client:
+        list_resp = await client.get(
+            f"https://ihqhfxbqdbwsxzxylnpb.supabase.co/auth/v1/admin/users",
+            headers={"Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}", "apikey": SUPABASE_SERVICE_ROLE_KEY},
+        )
+        users = list_resp.json().get("users", [])
+        admin_id = None
+        for u in users:
+            if u.get("email", "").lower() == "15871427062@163.com":
+                admin_id = u["id"]
+                break
+
+        if not admin_id:
+            return {"code": 404, "data": None, "message": "找不到管理员账号"}
+
+        # 先创建 upload 记录
+        upload_resp = supabase.table("uploads").insert({
+            "user_id": admin_id,
+            "filename": "test_data_admin.xlsx",
+            "file_size": 0,
+            "row_count": 500,
+            "status": "done",
+        }).execute()
+        upload_id = upload_resp.data[0]["id"]
+
+        # 生成500条数据
+        products = ['拿铁', '美式咖啡', '抹茶拿铁', '卡布奇诺', '摩卡', '冰美式', '椰青冷萃', '红茶', '绿茶', '蛋糕']
+        categories = ['咖啡', '咖啡', '咖啡', '咖啡', '咖啡', '咖啡', '咖啡', '茶饮', '茶饮', '甜点']
+        channels = ['堂食', '外卖', '外卖', '堂食', '外卖', '堂食', '堂食', '外卖', '堂食', '外卖']
+        customers = [f'cust_{i:03d}' for i in range(20)]
+        times = ['09:15', '10:30', '11:00', '12:15', '14:00', '15:30', '16:45', '18:00', '19:30', '20:00']
+
+        random.seed(42)
+        today = dt.date.today()
+        records = []
+        for i in range(500):
+            d = today - dt.timedelta(days=random.randint(0, 59))
+            idx = random.randint(0, 9)
+            qty = random.randint(1, 5)
+            price = round(random.uniform(15, 38), 2)
+            records.append({
+                "user_id": admin_id,
+                "upload_id": upload_id,
+                "order_date": d.isoformat(),
+                "order_time": random.choice(times),
+                "product_name": products[idx],
+                "category": categories[idx],
+                "quantity": qty,
+                "unit_price": price,
+                "total_amount": round(qty * price, 2),
+                "customer_ref": random.choice(customers),
+                "channel": random.choice(channels),
+            })
+
+        batch_size = 500
+        for i in range(0, len(records), batch_size):
+            batch = records[i:i + batch_size]
+            supabase.table("sales_data").insert(batch).execute()
+
+        return {"code": 0, "data": {"count": len(records)}, "message": "测试数据已生成"}
+
+
 @router.post("/reset-admin-password")
 async def reset_admin_password():
     """重置超级管理员密码为 test123456"""
