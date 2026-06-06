@@ -24,21 +24,28 @@ export default function RegisterPage() {
     try {
       const { token, user } = await registerWithPassword(values.email, values.password);
 
-      // 自动确认邮箱，解决国内用户收不到确认邮件的问题
+      // 后端确认邮箱放后台，不阻塞注册流程
       if (user?.user_id) {
-        await confirmEmail(user.user_id);
+        confirmEmail(user.user_id).catch(() => {});
       }
 
       if (token) {
         localStorage.setItem('token', token);
-        const me = await getMe();
-        const authedUser = withAdminFallback(
-          me.code === 0 ? { ...user, ...me.data, email: me.data.email || user.email } : user,
-          values.email,
-        );
+        const authedUser = withAdminFallback(user, values.email);
         setAuth(token, authedUser);
         message.success('注册成功，欢迎加入智析！');
         navigate(isAdminUser(authedUser) ? '/admin' : '/home', { replace: true });
+
+        // 后台静默补全用户角色/权限
+        getMe().then((me) => {
+          if (me.code === 0) {
+            const updated = withAdminFallback(
+              { ...authedUser, ...me.data, email: me.data.email || values.email },
+              values.email,
+            );
+            useAuthStore.getState().setAuth(token, updated);
+          }
+        }).catch(() => {});
       } else {
         message.success('注册成功！请登录');
         navigate('/login', { replace: true });

@@ -20,14 +20,23 @@ export default function LoginPage() {
     try {
       const { token, user } = await loginWithPassword(values.email, values.password);
       localStorage.setItem('token', token);
-      const me = await getMe();
-      const authedUser = withAdminFallback(
-        me.code === 0 ? { ...user, ...me.data, email: me.data.email || user.email } : user,
-        values.email,
-      );
+
+      // 先用 Supabase 登录结果直接进系统，不卡在后端唤醒
+      const authedUser = withAdminFallback(user, values.email);
       setAuth(token, authedUser);
       message.success('登录成功');
       navigate(isAdminUser(authedUser) ? '/admin' : '/home', { replace: true });
+
+      // 后台静默补全用户角色/权限，不影响已完成的登录
+      getMe().then((me) => {
+        if (me.code === 0) {
+          const updated = withAdminFallback(
+            { ...authedUser, ...me.data, email: me.data.email || values.email },
+            values.email,
+          );
+          useAuthStore.getState().setAuth(token, updated);
+        }
+      }).catch(() => {});
     } catch (err) {
       message.error(getErrorMessage(err));
     } finally {
