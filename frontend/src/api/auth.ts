@@ -11,16 +11,27 @@ function supabaseHeaders(): Record<string, string> {
   };
 }
 
-function translateError(msg: string): string {
-  const map: Record<string, string> = {
-    'Invalid login credentials': '邮箱或密码错误',
-    'Email not confirmed': '邮箱未确认，请先前往邮箱点击确认链接',
-    'User not found': '账号不存在',
-    'User already registered': '该邮箱已注册',
-    'Password should be at least 6 characters': '密码长度不能少于6位',
-    'Unable to validate email address: invalid format': '邮箱格式不正确',
-  };
-  return map[msg] || msg;
+function translateError(err: Record<string, any>): string {
+  // 收集所有可能的错误信息字段
+  const raw = (err.error_description || err.msg || err.message || err.error || '').toLowerCase();
+
+  if (raw.includes('invalid login') || raw.includes('invalid credentials') || raw.includes('invalid_grant'))
+    return '邮箱或密码错误';
+  if (raw.includes('email not confirmed') || raw.includes('not confirmed'))
+    return '邮箱未确认，请先前往邮箱点击确认链接';
+  if (raw.includes('user not found') || raw.includes('user not exist'))
+    return '账号不存在';
+  if (raw.includes('already registered') || raw.includes('already exists') || raw.includes('already been registered'))
+    return '该邮箱已注册';
+  if (raw.includes('password') && (raw.includes('6') || raw.includes('least') || raw.includes('weak')))
+    return '密码长度不能少于6位';
+  if (raw.includes('invalid format') || raw.includes('validate email') || raw.includes('invalid email'))
+    return '邮箱格式不正确';
+  if (raw.includes('rate') || raw.includes('too many') || raw.includes('request'))
+    return '操作太频繁，请稍后再试';
+
+  // 兜底：英文全换中文
+  return '登录失败，请检查邮箱和密码是否正确';
 }
 
 export async function loginWithPassword(
@@ -35,7 +46,7 @@ export async function loginWithPassword(
 
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({}));
-    throw new Error(translateError(err.error_description || err.msg) || '登录失败');
+    throw new Error(translateError(err));
   }
 
   const data = await resp.json();
@@ -61,7 +72,7 @@ export async function registerWithPassword(
 
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({}));
-    throw new Error(translateError(err.msg || err.error_description) || '注册失败');
+    throw new Error(translateError(err));
   }
 
   const data = await resp.json();
