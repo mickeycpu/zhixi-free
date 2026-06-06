@@ -11,6 +11,18 @@ function supabaseHeaders(): Record<string, string> {
   };
 }
 
+function translateError(msg: string): string {
+  const map: Record<string, string> = {
+    'Invalid login credentials': '邮箱或密码错误',
+    'Email not confirmed': '邮箱未确认，请先前往邮箱点击确认链接',
+    'User not found': '账号不存在',
+    'User already registered': '该邮箱已注册',
+    'Password should be at least 6 characters': '密码长度不能少于6位',
+    'Unable to validate email address: invalid format': '邮箱格式不正确',
+  };
+  return map[msg] || msg;
+}
+
 export async function loginWithPassword(
   email: string,
   password: string,
@@ -23,7 +35,7 @@ export async function loginWithPassword(
 
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({}));
-    throw new Error(err.error_description || err.msg || '登录失败');
+    throw new Error(translateError(err.error_description || err.msg) || '登录失败');
   }
 
   const data = await resp.json();
@@ -49,7 +61,7 @@ export async function registerWithPassword(
 
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({}));
-    throw new Error(err.msg || err.error_description || '注册失败');
+    throw new Error(translateError(err.msg || err.error_description) || '注册失败');
   }
 
   const data = await resp.json();
