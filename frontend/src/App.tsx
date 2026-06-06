@@ -36,7 +36,7 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
 
-            {/* 需要登录的页面 */}
+            {/* 所有需要登录的页面共用一个 AppLayout */}
             <Route
               element={
                 <AuthGuard>
@@ -52,15 +52,6 @@ export default function App() {
               <Route path="/alerts" element={<AlertsPage />} />
               <Route path="/feedback" element={<FeedbackPage />} />
               <Route path="/profile" element={<ProfilePage />} />
-            </Route>
-
-            <Route
-              element={
-                <AuthGuard requireAdmin>
-                  <AppLayout />
-                </AuthGuard>
-              }
-            >
               <Route path="/admin" element={<AdminPage />} />
             </Route>
 

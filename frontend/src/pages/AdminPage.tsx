@@ -53,6 +53,16 @@ export default function AdminPage() {
   const [banReason, setBanReason] = useState('');
 
   const isSuperAdmin = currentUser?.role === 'super_admin';
+  const isAdmin = currentUser?.role === 'admin' || isSuperAdmin;
+
+  if (!isAdmin) {
+    return (
+      <div style={{ textAlign: 'center', padding: 60 }}>
+        <Typography.Title level={4}>无访问权限</Typography.Title>
+        <Typography.Text type="secondary">此页面仅限管理员访问</Typography.Text>
+      </div>
+    );
+  }
 
   const loadData = async () => {
     setLoading(true);
