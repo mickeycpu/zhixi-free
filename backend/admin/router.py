@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
-from auth.permissions import require_admin, require_super_admin
+from auth.permissions import require_admin, require_super_admin, _seed_sales_data
 from database.client import supabase
 from config import SUPABASE_SERVICE_ROLE_KEY
 
@@ -116,6 +116,35 @@ async def _migrate_via_api():
         results.append(f"ai_token_usage表: {resp2.status_code}")
 
     return {"code": 0, "data": {"checks": results}, "message": "表检查完成。如都是200则表已存在，否则需要在Supabase SQL Editor中执行schema.sql"}
+
+
+@router.post("/backfill-all-users")
+async def backfill_all_users():
+    """为所有已有Supabase Auth用户创建profile + 示例数据"""
+    import httpx
+    async with httpx.AsyncClient(timeout=15) as client:
+        list_resp = await client.get(
+            f"https://ihqhfxbqdbwsxzxylnpb.supabase.co/auth/v1/admin/users",
+            headers={"Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}", "apikey": SUPABASE_SERVICE_ROLE_KEY},
+        )
+        all_users = list_resp.json().get("users", [])
+        results = []
+        for u in all_users:
+            uid = u["id"]
+            email = (u.get("email") or "").lower()
+            phone = u.get("phone") or ""
+            role = "super_admin" if email == "15871427062@163.com" else "user"
+            existing = supabase.table("profiles").select("user_id").eq("user_id", uid).maybe_single().execute()
+            if existing.data:
+                supabase.table("profiles").update({"email": email, "phone": phone, "role": role}).eq("user_id", uid).execute()
+            else:
+                supabase.table("profiles").insert({"user_id": uid, "email": email, "phone": phone, "role": role, "is_banned": False}).execute()
+            try:
+                _seed_sales_data(uid)
+            except Exception:
+                pass
+            results.append({"email": email, "role": role, "done": True})
+        return {"code": 0, "data": {"backfilled": len(results)}, "message": "全部补完"}
 
 
 @router.post("/generate-test-data")

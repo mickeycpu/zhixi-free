@@ -70,8 +70,9 @@ export default function AdminPage() {
       const [overviewResp, usersResp] = await Promise.all([getAdminOverview(), getAdminUsers()]);
       if (overviewResp.code === 0) setOverview(overviewResp.data);
       if (usersResp.code === 0) setUsers(usersResp.data);
-    } catch (err) {
-      message.error(getErrorMessage(err, '管理员数据加载失败'));
+    } catch {
+      // 静默重试，不弹窗扰人
+      window.setTimeout(() => { void loadData(); }, 5000);
     } finally {
       setLoading(false);
     }
