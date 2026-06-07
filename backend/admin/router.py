@@ -279,9 +279,7 @@ class BanUpdate(BaseModel):
 
 
 def _count(table: str) -> int:
-    resp = supabase.table(table).select("id", count="exact").execute()
-    if hasattr(resp, "count") and resp.count is not None:
-        return resp.count
+    resp = supabase.table(table).select("*").execute()
     return len(resp.data) if resp.data else 0
 
 
