@@ -326,10 +326,7 @@ def overview(request: Request):
 def list_users(request: Request):
     require_admin(request)
 
-    profiles_resp = supabase.table("profiles") \
-        .select("*") \
-        .order("created_at", desc=True) \
-        .execute()
+    profiles_resp = supabase.table("profiles").select("*").execute()
 
     profiles = profiles_resp.data or []
 
