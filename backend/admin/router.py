@@ -136,8 +136,8 @@ async def backfill_all_users():
                 phone = u.get("phone") or ""
                 role = "super_admin" if email == "15871427062@163.com" else "user"
                 try:
-                    p = supabase.table("profiles").select("user_id").eq("user_id", uid).maybe_single().execute()
-                    if p.data:
+                    p = supabase.table("profiles").select("user_id").eq("user_id", uid).limit(1).execute()
+                    if p and p.data and len(p.data) > 0:
                         supabase.table("profiles").update({"role": role, "email": email, "is_banned": False}).eq("user_id", uid).execute()
                     else:
                         supabase.table("profiles").insert({"user_id": uid, "email": email, "phone": phone or "", "role": role, "is_banned": False}).execute()
