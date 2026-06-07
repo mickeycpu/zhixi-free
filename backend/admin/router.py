@@ -272,7 +272,9 @@ class BanUpdate(BaseModel):
 
 def _count(table: str) -> int:
     resp = supabase.table(table).select("id", count="exact").execute()
-    return resp.count or 0
+    if hasattr(resp, "count") and resp.count is not None:
+        return resp.count
+    return len(resp.data) if resp.data else 0
 
 
 def _sum_tokens() -> dict:
