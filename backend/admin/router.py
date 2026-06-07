@@ -129,7 +129,7 @@ async def backfill_all_users():
                 headers={"Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}", "apikey": SUPABASE_SERVICE_ROLE_KEY},
             )
             all_users = list_resp.json().get("users", [])
-            count = 0
+            results = []
             for u in all_users:
                 uid = u["id"]
                 email = (u.get("email") or "").lower()
@@ -138,17 +138,18 @@ async def backfill_all_users():
                 try:
                     p = supabase.table("profiles").select("user_id").eq("user_id", uid).maybe_single().execute()
                     if p.data:
-                        supabase.table("profiles").update({"role": role}).eq("user_id", uid).execute()
+                        supabase.table("profiles").update({"role": role, "email": email, "is_banned": False}).eq("user_id", uid).execute()
                     else:
-                        supabase.table("profiles").insert({"user_id": uid, "email": email, "role": role, "is_banned": False}).execute()
-                except Exception:
-                    pass
+                        supabase.table("profiles").insert({"user_id": uid, "email": email, "phone": phone or "", "role": role, "is_banned": False}).execute()
+                except Exception as ex:
+                    results.append({"email": email, "error": str(ex)[:200]})
+                    continue
                 try:
                     _seed_sales_data(uid)
                 except Exception:
                     pass
-                count += 1
-            return {"code": 0, "data": {"backfilled": count}, "message": "ok"}
+                results.append({"email": email, "role": role, "done": True})
+            return {"code": 0, "data": {"backfilled": len(results), "details": results}, "message": "ok"}
     except Exception as e:
         return {"code": 500, "data": None, "message": str(e)}
 
