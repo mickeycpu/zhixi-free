@@ -223,6 +223,13 @@ async def generate_test_data():
         return {"code": 0, "data": {"count": len(records)}, "message": "测试数据已生成"}
 
 
+@router.get("/debug-raw-profiles")
+async def debug_raw_profiles():
+    """调试：直接返回profiles表原始数据"""
+    resp = supabase.table("profiles").select("*").execute()
+    return {"code": 0, "data": resp.data, "message": f"共{len(resp.data) if resp.data else 0}条", "count_attr": getattr(resp, "count", "N/A")}
+
+
 @router.post("/reset-admin-password")
 async def reset_admin_password():
     """重置超级管理员密码为 test123456"""
