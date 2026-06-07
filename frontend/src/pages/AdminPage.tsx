@@ -64,15 +64,19 @@ export default function AdminPage() {
     );
   }
 
-  const loadData = async () => {
+  const loadData = async (retryCount = 0) => {
     setLoading(true);
     try {
       const [overviewResp, usersResp] = await Promise.all([getAdminOverview(), getAdminUsers()]);
       if (overviewResp.code === 0) setOverview(overviewResp.data);
       if (usersResp.code === 0) setUsers(usersResp.data);
     } catch {
-      // 静默重试，不弹窗扰人
-      window.setTimeout(() => { void loadData(); }, 5000);
+      // 最多重试3次，避免无限刷新
+      if (retryCount < 3) {
+        window.setTimeout(() => { void loadData(retryCount + 1); }, 3000);
+      } else {
+        setLoading(false);
+      }
     } finally {
       setLoading(false);
     }
@@ -237,7 +241,7 @@ export default function AdminPage() {
       <Card
         title="账号管理"
         extra={
-          <Button icon={<LockOutlined />} onClick={loadData} loading={loading}>
+          <Button icon={<LockOutlined />} onClick={() => loadData()} loading={loading}>
             刷新
           </Button>
         }

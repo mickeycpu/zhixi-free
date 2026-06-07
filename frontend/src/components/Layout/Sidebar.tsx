@@ -59,7 +59,6 @@ export default function Sidebar({ collapsed, onCollapse }: { collapsed: boolean;
 
   const adminMenuItems = [
     { key: '/admin', icon: <SafetyCertificateOutlined />, label: '管理员概览' },
-    { key: '/home', icon: <HomeOutlined />, label: '切换到用户系统' },
   ];
 
   const menuItems = isAdmin ? adminMenuItems : userMenuItems;
