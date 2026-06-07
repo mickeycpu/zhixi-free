@@ -331,21 +331,38 @@ def list_users(request: Request):
         .order("created_at", desc=True) \
         .execute()
 
-    users = []
-    for profile in profiles_resp.data or []:
-        user_id = profile["user_id"]
-        uploads = supabase.table("uploads").select("id", count="exact").eq("user_id", user_id).execute()
-        reports = supabase.table("reports").select("id", count="exact").eq("user_id", user_id).execute()
-        sales = supabase.table("sales_data").select("id", count="exact").eq("user_id", user_id).execute()
-        usage = supabase.table("ai_token_usage").select("total_tokens").eq("user_id", user_id).execute()
+    profiles = profiles_resp.data or []
 
-        users.append({
-            **profile,
-            "total_uploads": uploads.count or 0,
-            "total_reports": reports.count or 0,
-            "total_sales": sales.count or 0,
-            "total_tokens": sum((row.get("total_tokens") or 0) for row in (usage.data or [])),
-        })
+    users = []
+    for profile in profiles:
+        uid = profile.get("user_id")
+        u = dict(profile)
+        u.setdefault("total_uploads", 0)
+        u.setdefault("total_reports", 0)
+        u.setdefault("total_sales", 0)
+        u.setdefault("total_tokens", 0)
+        # 异步查每个用户的数据（不阻塞主查询）
+        try:
+            s = supabase.table("sales_data").select("id", count="exact").eq("user_id", uid).execute()
+            u["total_sales"] = s.count if hasattr(s, "count") and s.count else 0
+        except Exception:
+            pass
+        try:
+            r = supabase.table("reports").select("id", count="exact").eq("user_id", uid).execute()
+            u["total_reports"] = r.count if hasattr(r, "count") and r.count else 0
+        except Exception:
+            pass
+        try:
+            up = supabase.table("uploads").select("id", count="exact").eq("user_id", uid).execute()
+            u["total_uploads"] = up.count if hasattr(up, "count") and up.count else 0
+        except Exception:
+            pass
+        try:
+            tk = supabase.table("ai_token_usage").select("total_tokens").eq("user_id", uid).execute()
+            u["total_tokens"] = sum((row.get("total_tokens") or 0) for row in (tk.data or []))
+        except Exception:
+            pass
+        users.append(u)
 
     return {"code": 0, "data": users, "message": "ok"}
 
