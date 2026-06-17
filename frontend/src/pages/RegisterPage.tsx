@@ -136,7 +136,7 @@ export default function RegisterPage() {
 
             <Form.Item style={{ marginBottom: 12 }}>
               <Button htmlType="submit" loading={loading} block style={{
-                height: 44, fontWeight: 600, background: '#10b981', borderColor: '#10b981',
+                height: 44, fontWeight: 600, background: '#10b981', borderColor: '#10b981', color: '#fff',
               }}>
                 注册
               </Button>
