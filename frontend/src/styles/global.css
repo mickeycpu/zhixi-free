@@ -36,6 +36,14 @@ html, body, #root {
   box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4) !important;
   transform: translateY(-1px);
 }
+.ant-btn-primary.btn-green {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3) !important;
+}
+.ant-btn-primary.btn-green:hover {
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
+}
 
 .ant-btn-default {
   border-radius: var(--radius-sm) !important;
