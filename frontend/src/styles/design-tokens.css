@@ -1,51 +1,75 @@
-/* ====== 智析免费版 · 设计令牌 ====== */
+/* ====== 智析免费版 ? 设计令牌 ====== */
 :root {
-  /* --- 主色（靛蓝）--- */
-  --color-primary: #4f46e5;
-  --color-primary-light: #6366f1;
-  --color-primary-dark: #4338ca;
-  --color-primary-bg: #eef2ff;
-  --color-primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  /* --- 主色（鸢尾紫 #6e56cf）--- */
+  --color-primary: #6e56cf;
+  --color-primary-light: #9e8cfc;
+  --color-primary-dark: #4740b3;
+  --color-primary-bg: #f0edff;
+  --color-primary-gradient: linear-gradient(135deg, #6e56cf 0%, #9e8cfc 100%);
+  --color-ring: #6e56cf;
 
-  /* --- 强调色（琥珀金）--- */
-  --color-accent: #f59e0b;
-  --color-accent-light: #fbbf24;
-  --color-accent-bg: #fffbeb;
+  /* --- 强调色 --- */
+  --color-accent: #d8e6ff;
+  --color-accent-light: #e4f0ff;
+  --color-accent-bg: #f0f5ff;
+  --color-accent-foreground: #2a2a4a;
 
   /* --- 语义色 --- */
   --color-success: #10b981;
   --color-success-bg: #ecfdf5;
-  --color-danger: #ef4444;
-  --color-danger-bg: #fef2f2;
+  --color-danger: #ff5470;
+  --color-danger-bg: #fef2f4;
   --color-warning: #f59e0b;
   --color-warning-bg: #fffbeb;
   --color-info: #3b82f6;
   --color-info-bg: #eff6ff;
 
-  /* --- 中性色 --- */
-  --color-bg: #f8f7f4;
+  /* --- 背景/表面 --- */
+  --color-bg: #f5f5ff;
   --color-surface: #ffffff;
-  --color-sidebar: #1e1b4b;
-  --color-sidebar-hover: #312e81;
-  --color-sidebar-text: #c7d2fe;
-  --color-sidebar-active: #4f46e5;
+  --color-muted: #f0f0fa;
+  --color-secondary: #e4dfff;
+  --color-secondary-foreground: #4a4080;
+
+  /* --- 深色侧边栏 --- */
+  --color-sidebar: #0f0f1a;
+  --color-sidebar-hover: #2d2b55;
+  --color-sidebar-text: #c4c2ff;
+  --color-sidebar-active: #6e56cf;
+  --color-sidebar-accent: #303060;
+  --color-sidebar-border: #303052;
 
   /* --- 文字色 --- */
-  --color-text-primary: #1e1b2e;
-  --color-text-secondary: #6b7280;
-  --color-text-muted: #9ca3af;
+  --color-text-primary: #2a2a4a;
+  --color-text-secondary: #6c6c8a;
+  --color-text-muted: #a0a0c0;
   --color-text-inverse: #f9fafb;
+  --color-foreground: #2a2a4a;
+  --color-muted-foreground: #6c6c8a;
 
   /* --- 边框 --- */
-  --color-border: #e5e7eb;
-  --color-border-light: #f3f4f6;
+  --color-border: #e0e0f0;
+  --color-border-light: #f0f0fa;
+
+  /* --- 图表色 --- */
+  --color-chart-1: #6e56cf;
+  --color-chart-2: #9e8cfc;
+  --color-chart-3: #5d5fef;
+  --color-chart-4: #7c75fa;
+  --color-chart-5: #4740b3;
 
   /* --- 阴影 --- */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
-  --shadow-card-hover: 0 4px 16px rgba(79, 70, 229, 0.12);
+  --shadow-sm: 0 1px 2px rgba(42, 42, 74, 0.04);
+  --shadow-md: 0 4px 10px rgba(42, 42, 74, 0.08);
+  --shadow-lg: 0 8px 24px rgba(42, 42, 74, 0.10);
+  --shadow-card: 0 1px 3px rgba(42, 42, 74, 0.04), 0 4px 10px rgba(42, 42, 74, 0.06);
+  --shadow-card-hover: 0 4px 16px rgba(110, 86, 207, 0.15);
+  --shadow-offset-x: 0px;
+  --shadow-offset-y: 4px;
+  --shadow-blur: 10px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 0.12;
+  --shadow-color: hsl(240 30% 15%);
 
   /* --- 圆角 --- */
   --radius-sm: 6px;

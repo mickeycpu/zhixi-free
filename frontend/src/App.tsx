@@ -22,7 +22,7 @@ export default function App() {
       locale={zhCN}
       theme={{
         token: {
-          colorPrimary: '#4f46e5',
+          colorPrimary: '#6e56cf',
           borderRadius: 10,
           fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
         },
