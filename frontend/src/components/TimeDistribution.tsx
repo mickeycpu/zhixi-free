@@ -9,66 +9,98 @@ interface Props {
 
 export default function TimeDistribution({ timeSlots, weekdays }: Props) {
   const slotOption = {
-    tooltip: { trigger: 'axis' as const },
-    grid: { left: 60, right: 20, top: 10, bottom: 30 },
+    tooltip: {
+      trigger: 'axis' as const,
+      backgroundColor: '#1e1b4b',
+      borderColor: '#312e81',
+      textStyle: { color: '#e0e7ff', fontSize: 12 },
+    },
+    grid: { left: 50, right: 20, top: 8, bottom: 30 },
     xAxis: {
       type: 'category' as const,
       data: timeSlots.map((d) => d.slot),
-      axisLabel: { rotate: 45, fontSize: 10 },
+      axisLabel: { color: '#9ca3af', fontSize: 10, rotate: 45 },
+      axisTick: { show: false },
     },
-    yAxis: { type: 'value' as const, name: '销售额 (元)' },
-    series: [
-      {
-        type: 'bar',
-        data: timeSlots.map((d) => d.amount),
-        itemStyle: {
-          color: '#4f46e5',
-          borderRadius: [4, 4, 0, 0],
+    yAxis: {
+      type: 'value' as const,
+      splitLine: { lineStyle: { color: '#f3f4f6', type: 'dashed' as const } },
+      axisLabel: { color: '#9ca3af', fontSize: 11, formatter: (v: number) => v >= 1000 ? (v / 1000).toFixed(0) + 'k' : '¥' + v },
+    },
+    series: [{
+      type: 'bar',
+      data: timeSlots.map((d) => d.amount),
+      itemStyle: {
+        color: {
+          type: 'linear' as const, x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: '#4f46e5' },
+            { offset: 1, color: '#a78bfa' },
+          ],
         },
+        borderRadius: [6, 6, 0, 0],
       },
-    ],
+      barWidth: '70%',
+      animationDuration: 500,
+    }],
   };
 
   const weekdayOption = {
-    tooltip: { trigger: 'axis' as const },
-    grid: { left: 40, right: 20, top: 10, bottom: 20 },
+    tooltip: {
+      trigger: 'axis' as const,
+      backgroundColor: '#1e1b4b',
+      borderColor: '#312e81',
+      textStyle: { color: '#e0e7ff', fontSize: 12 },
+    },
+    grid: { left: 40, right: 20, top: 8, bottom: 20 },
     xAxis: {
       type: 'category' as const,
       data: weekdays.map((d) => d.weekday),
+      axisLine: { lineStyle: { color: '#e5e7eb' } },
+      axisTick: { show: false },
+      axisLabel: { color: '#9ca3af', fontSize: 12 },
     },
-    yAxis: { type: 'value' as const, name: '销售额 (元)' },
-    series: [
-      {
-        type: 'bar',
-        data: weekdays.map((d) => d.amount),
+    yAxis: {
+      type: 'value' as const,
+      splitLine: { lineStyle: { color: '#f3f4f6', type: 'dashed' as const } },
+      axisLabel: { color: '#9ca3af', fontSize: 11, formatter: (v: number) => '¥' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v) },
+    },
+    series: [{
+      type: 'bar',
+      data: weekdays.map((d) => ({
+        value: d.amount,
         itemStyle: {
-          color: (params: { dataIndex: number }) => {
-            // 周六日高亮
-            const idx = params.dataIndex;
-            return idx >= 5 ? '#ff7a45' : '#69b1ff';
-          },
-          borderRadius: [4, 4, 0, 0],
+          color: d.weekday === '周六' || d.weekday === '周日'
+            ? { type: 'linear' as const, x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#f59e0b' }, { offset: 1, color: '#fbbf24' }] }
+            : { type: 'linear' as const, x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#4f46e5' }, { offset: 1, color: '#818cf8' }] },
+          borderRadius: [6, 6, 0, 0],
         },
-        label: {
-          show: true,
-          position: 'top' as const,
-          formatter: (p: { value: number }) => `¥${(p.value / 10000).toFixed(1)}万`,
-          fontSize: 11,
-        },
+      })),
+      label: {
+        show: true, position: 'top' as const, color: '#9ca3af', fontSize: 10,
+        formatter: (p: { value: number }) => p.value >= 1000 ? '¥' + (p.value / 1000).toFixed(1) + 'k' : '¥' + p.value,
       },
-    ],
+      barWidth: '55%',
+      animationDuration: 500,
+    }],
   };
 
   return (
-    <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+    <Row gutter={[16, 16]} style={{ marginTop: 8 }}>
       <Col xs={24} lg={14}>
-        <Card title="时段分布">
-          <ReactECharts option={slotOption} style={{ height: 320 }} />
+        <Card
+          style={{ borderRadius: 12, border: '1px solid var(--color-border-light)' }}
+          title={<span style={{ fontSize: 15, fontWeight: 600 }}>时段分布</span>}
+        >
+          <ReactECharts option={slotOption} style={{ height: 300 }} />
         </Card>
       </Col>
       <Col xs={24} lg={10}>
-        <Card title="星期分布">
-          <ReactECharts option={weekdayOption} style={{ height: 320 }} />
+        <Card
+          style={{ borderRadius: 12, border: '1px solid var(--color-border-light)' }}
+          title={<span style={{ fontSize: 15, fontWeight: 600 }}>星期分布</span>}
+        >
+          <ReactECharts option={weekdayOption} style={{ height: 300 }} />
         </Card>
       </Col>
     </Row>

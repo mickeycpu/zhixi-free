@@ -87,22 +87,13 @@ export default function DashboardPage() {
 
   return (
     <div>
-      {/* 概览区 */}
       <SalesOverviewCards data={overview} />
-
-      {/* 趋势区 */}
-      <div className="section-label">销售趋势</div>
       <TrendChart dayData={dayTrends} weekData={weekTrends} monthData={monthTrends} />
-
-      {/* 中区：品类 + 商品 */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 16, marginTop: 16 }}>
         <CategoryChart data={categories} />
         <ProductRanking data={products} />
       </div>
-
-      {/* 时段区 */}
-      <div style={{ marginTop: 24 }}>
-        <div className="section-label">时段分布</div>
+      <div style={{ marginTop: 16 }}>
         <TimeDistribution timeSlots={timeSlots} weekdays={weekdays} />
       </div>
     </div>
