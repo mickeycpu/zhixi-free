@@ -177,25 +177,78 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          {/* 模拟图表区 */}
-          <div style={{ padding: '0 32px 28px', display: 'flex', gap: 12 }}>
+          {/* 模拟图表区：柱状图 + 饼图 */}
+          <div style={{ padding: '0 32px 24px', display: 'flex', gap: 16 }}>
+            {/* 柱状图——带数据标签 */}
             <div style={{
-              flex: 1, height: 100, borderRadius: 10, background: 'linear-gradient(180deg, rgba(110,86,207,0.08) 0%, rgba(110,86,207,0.02) 100%)',
-              display: 'flex', alignItems: 'flex-end', padding: '12px 16px', justifyContent: 'space-between',
+              flex: 1, borderRadius: 12,
+              background: 'linear-gradient(180deg, rgba(110,86,207,0.04) 0%, rgba(110,86,207,0.01) 100%)',
+              padding: '16px 12px 8px',
             }}>
-              {[40, 65, 50, 80, 55, 90, 70].map((h, i) => (
-                <div key={i} style={{
-                  width: '8%', height: `${h}%`, borderRadius: '4px 4px 0 0',
-                  background: `linear-gradient(180deg, #6e56cf, #9e8cfc)`,
-                  opacity: 0.3 + i * 0.1,
-                }} />
-              ))}
+              <div style={{ fontSize: 11, fontWeight: 600, color: '#6c6c8a', marginBottom: 10, textAlign: 'center' }}>
+                品类销售额排?
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', gap: 6, height: 110 }}>
+                {[
+                  { label: '咖啡', value: 2840, height: 90 },
+                  { label: '茶饮', value: 1620, height: 55 },
+                  { label: '甜点', value: 980, height: 35 },
+                  { label: '轻食', value: 540, height: 22 },
+                ].map((bar) => (
+                  <div key={bar.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: '#2a2a4a', marginBottom: 4 }}>
+                      ¥{bar.value.toLocaleString()}
+                    </span>
+                    <div style={{
+                      width: '70%', height: bar.height,
+                      background: `linear-gradient(180deg, #6e56cf, #9e8cfc)`,
+                      borderRadius: '5px 5px 0 0',
+                    }} />
+                    <span style={{ fontSize: 10, color: '#6c6c8a', marginTop: 5, fontWeight: 500 }}>
+                      {bar.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
+
+            {/* 饼图——带标签 */}
             <div style={{
-              width: 100, height: 100, borderRadius: '50%',
-              border: '8px solid rgba(110,86,207,0.12)',
-              borderTopColor: '#6e56cf', borderRightColor: '#9e8cfc',
-            }} />
+              width: 220, borderRadius: 12,
+              background: 'linear-gradient(180deg, rgba(110,86,207,0.04) 0%, rgba(110,86,207,0.01) 100%)',
+              padding: '16px 12px 12px',
+              display: 'flex', alignItems: 'center', gap: 14,
+            }}>
+              {/* 简化环形图 */}
+              <div style={{
+                width: 90, height: 90, borderRadius: '50%', flexShrink: 0,
+                background: `conic-gradient(#6e56cf 0deg 173deg, #9e8cfc 173deg 260deg, #c4b5fd 260deg 310deg, #e0e0f0 310deg 360deg)`,
+                position: 'relative',
+              }}>
+                <div style={{
+                  position: 'absolute', inset: 18, borderRadius: '50%', background: '#fff',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#2a2a4a' }}>48%</span>
+                  <span style={{ fontSize: 9, color: '#6c6c8a' }}>咖啡</span>
+                </div>
+              </div>
+              {/* 图例 */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11 }}>
+                {[
+                  { color: '#6e56cf', label: '咖啡', pct: '48%' },
+                  { color: '#9e8cfc', label: '茶饮', pct: '28%' },
+                  { color: '#c4b5fd', label: '甜点', pct: '14%' },
+                  { color: '#e0e0f0', label: '轻食', pct: '10%' },
+                ].map((item) => (
+                  <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: 2, background: item.color, flexShrink: 0 }} />
+                    <span style={{ color: '#6c6c8a', width: 28 }}>{item.label}</span>
+                    <span style={{ color: '#2a2a4a', fontWeight: 600 }}>{item.pct}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
